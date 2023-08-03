@@ -1,4 +1,4 @@
-package login
+package channel
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func Login(e *gin.Engine) {
-	e.GET("/api/login", login)
+func Channel(e *gin.Engine) {
+	e.GET("/api/channel", channel) // ?server_id=xxx&channel_id=xxx
 }
 
-func login(c *gin.Context) {
+func channel(c *gin.Context) {
 	authHeader := c.GetHeader(shared.HeaderAuthorization)
 
 	discordID, err := shared.GetDiscordIDFromAuthHeader(authHeader)

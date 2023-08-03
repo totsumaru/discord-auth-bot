@@ -5,10 +5,13 @@ import (
 	"github.com/golang-jwt/jwt"
 	errors "github.com/techstart35/discord-auth-bot/src/shared"
 	seeker "github.com/techstart35/discord-auth-bot/src/shared/map"
+	"os"
 	"strings"
 )
 
 const HeaderAuthorization = "Authorization"
+
+// TODO: 有効期限の確認を行う
 
 // Header(Bearer xxx)からdiscordIDを取得します
 // ヘッダーの取得例) authHeader := c.GetHeader(shared.HeaderAuthorization)
@@ -20,7 +23,7 @@ func GetDiscordIDFromAuthHeader(authHeader string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("メソッドが期待した値と異なります: %v", token.Header["alg"])
 		}
-		return []byte("XzR9mAdhTeyF5f3ht1Ll3G+uCV38blAjcMNNK4WssXTWM4oCVVnZJdPEMXu2WF/G2g+scgF/q+B5wyKrchw33w=="), nil // yourSigningKeyはSupabaseで設定したJWT SECRET
+		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
 		return "", errors.NewError("認証できません")
