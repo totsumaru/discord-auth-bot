@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/techstart35/discord-auth-bot/src/api"
 	"github.com/techstart35/discord-auth-bot/src/bot"
+	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"log"
 	"os"
 	"os/signal"
@@ -34,20 +35,22 @@ func main() {
 	{
 		var Token = "Bot " + os.Getenv("APP_BOT_TOKEN")
 
-		session, err := discordgo.New(Token)
-		session.Token = Token
+		s, err := discordgo.New(Token)
+		s.Token = Token
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		//イベントハンドラを追加
-		session.AddHandler(bot.GuildCreateHandler)
+		discord.Session = s
 
-		if err = session.Open(); err != nil {
+		//イベントハンドラを追加
+		discord.Session.AddHandler(bot.GuildCreateHandler)
+
+		if err = discord.Session.Open(); err != nil {
 			log.Fatalln(err)
 		}
 		defer func() {
-			if err = session.Close(); err != nil {
+			if err = discord.Session.Close(); err != nil {
 				log.Fatalln(err)
 			}
 			return
