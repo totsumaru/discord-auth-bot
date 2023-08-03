@@ -12,11 +12,9 @@ type Server struct {
 }
 
 // サーバーを作成します
-func NewServer(id ID, subsID UserID, operator []RoleID) (Server, error) {
+func NewServer(id ID) (Server, error) {
 	s := Server{}
 	s.id = id
-	s.subscriberID = subsID
-	s.operatorRoleID = operator
 
 	return s, nil
 }
@@ -56,6 +54,16 @@ func (s *Server) SubscriberID() UserID {
 // オペレーターロールIDを取得します
 func (s *Server) OperatorRoleID() []RoleID {
 	return s.operatorRoleID
+}
+
+// オペレーターロールIDをstringのsliceで取得します
+func (s *Server) OperatorRoleIDByStr() []string {
+	res := make([]string, 0)
+	for _, v := range s.operatorRoleID {
+		res = append(res, v.value)
+	}
+
+	return res
 }
 
 // 検証します
