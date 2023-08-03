@@ -65,10 +65,11 @@ func FindByID(id model.ID) (Server, error) {
 
 // サーバーを新規作成します
 func Create(id model.ID) error {
-	// すでに存在している場合はエラーを返します
+	// すでに存在している場合は終了します。
+	// botの起動の度に実行されることになるので、すでにある場合は無視します。
 	_, err := FindByID(id)
 	if err == nil {
-		return errors.NewError("すでに存在しています")
+		return nil
 	}
 
 	client := &http.Client{}

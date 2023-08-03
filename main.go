@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/techstart35/discord-auth-bot/src/api"
+	"github.com/techstart35/discord-auth-bot/src/bot"
 	"log"
 	"os"
 	"os/signal"
@@ -29,28 +31,28 @@ func init() {
 
 func main() {
 	// Bot
-	//{
-	//	var Token = "Bot " + os.Getenv("APP_BOT_TOKEN")
-	//
-	//	session, err := discordgo.New(Token)
-	//	session.Token = Token
-	//	if err != nil {
-	//		log.Fatalln(err)
-	//	}
-	//
-	//	//イベントハンドラを追加
-	//	//session.AddHandler(message_create.Handler)
-	//
-	//	if err = session.Open(); err != nil {
-	//		log.Fatalln(err)
-	//	}
-	//	defer func() {
-	//		if err = session.Close(); err != nil {
-	//			log.Fatalln(err)
-	//		}
-	//		return
-	//	}()
-	//}
+	{
+		var Token = "Bot " + os.Getenv("APP_BOT_TOKEN")
+
+		session, err := discordgo.New(Token)
+		session.Token = Token
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		//イベントハンドラを追加
+		session.AddHandler(bot.GuildCreateHandler)
+
+		if err = session.Open(); err != nil {
+			log.Fatalln(err)
+		}
+		defer func() {
+			if err = session.Close(); err != nil {
+				log.Fatalln(err)
+			}
+			return
+		}()
+	}
 
 	// Gin
 	{
