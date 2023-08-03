@@ -5,52 +5,52 @@ import "github.com/bwmarrin/discordgo"
 type Permission bool
 
 type Permissions struct {
-	ViewChannels            Permission
-	ManageChannels          Permission
-	ManageRoles             Permission
-	CreateExpressions       Permission
-	ManageExpressions       Permission // 絵文字の管理
-	ViewAuditLog            Permission
-	ViewServerInsights      Permission
-	ManageWebhooks          Permission
-	ManageServer            Permission
-	CreateInvite            Permission
-	ChangeNickname          Permission
-	ManageNickname          Permission
-	KickMembers             Permission
-	BanMembers              Permission
-	TimeoutMembers          Permission
-	SendMessages            Permission
-	SendMessagesInThreads   Permission
-	CreatePublicThreads     Permission
-	CreatePrivateThreads    Permission
-	EmbedLinks              Permission
-	AttachFiles             Permission
-	AddReactions            Permission
-	UseExternalEmoji        Permission
-	UserExternalStickers    Permission
-	MentionEveryone         Permission
-	ManageMessages          Permission
-	ManageThreads           Permission
-	ReadMessageHistory      Permission
-	SendTextToSpeechMessage Permission
-	UseApplicationCommands  Permission
-	SendVoiceMessages       Permission
-	VcConnect               Permission
-	VcSpeak                 Permission
-	VcVideo                 Permission
-	VcUseActivities         Permission
-	VcUseSoundboard         Permission
-	VcUserExternalSounds    Permission
-	VcUseVoiceActivity      Permission
-	VcPrioritySpeaker       Permission
-	VcMuteMembers           Permission
-	VcDeafenMembers         Permission
-	VcMoveMembers           Permission
-	StageRequestToSpeak     Permission
-	CreateEvents            Permission
-	ManageEvents            Permission
-	Administrator           Permission
+	ViewChannels            Permission `json:"view_channels"`
+	ManageChannels          Permission `json:"manage_channels"`
+	ManageRoles             Permission `json:"manage_roles"`
+	CreateExpressions       Permission `json:"create_expressions"`
+	ManageExpressions       Permission `json:"manage_expressions"` // 絵文字の管理
+	ViewAuditLog            Permission `json:"view_audit_log"`
+	ViewServerInsights      Permission `json:"view_server_insights"`
+	ManageWebhooks          Permission `json:"manage_webhooks"`
+	ManageServer            Permission `json:"manage_server"`
+	CreateInvite            Permission `json:"create_invite"`
+	ChangeNickname          Permission `json:"change_nickname"`
+	ManageNickname          Permission `json:"manage_nickname"`
+	KickMembers             Permission `json:"kick_members"`
+	BanMembers              Permission `json:"ban_members"`
+	TimeoutMembers          Permission `json:"timeout_members"`
+	SendMessages            Permission `json:"send_messages"`
+	SendMessagesInThreads   Permission `json:"send_messages_in_threads"`
+	CreatePublicThreads     Permission `json:"create_public_threads"`
+	CreatePrivateThreads    Permission `json:"create_private_threads"`
+	EmbedLinks              Permission `json:"embed_links"`
+	AttachFiles             Permission `json:"attach_files"`
+	AddReactions            Permission `json:"add_reactions"`
+	UseExternalEmoji        Permission `json:"use_external_emoji"`
+	UserExternalStickers    Permission `json:"user_external_stickers"`
+	MentionEveryone         Permission `json:"mention_everyone"`
+	ManageMessages          Permission `json:"manage_messages"`
+	ManageThreads           Permission `json:"manage_threads"`
+	ReadMessageHistory      Permission `json:"read_message_history"`
+	SendTextToSpeechMessage Permission `json:"send_text_to_speech_message"`
+	UseApplicationCommands  Permission `json:"use_application_commands"`
+	SendVoiceMessages       Permission `json:"send_voice_messages"`
+	VcConnect               Permission `json:"vc_connect"`
+	VcSpeak                 Permission `json:"vc_speak"`
+	VcVideo                 Permission `json:"vc_video"`
+	VcUseActivities         Permission `json:"vc_use_activities"`
+	VcUseSoundboard         Permission `json:"vc_use_soundboard"`
+	VcUserExternalSounds    Permission `json:"vc_user_external_sounds"`
+	VcUseVoiceActivity      Permission `json:"vc_use_voice_activity"`
+	VcPrioritySpeaker       Permission `json:"vc_priority_speaker"`
+	VcMuteMembers           Permission `json:"vc_mute_members"`
+	VcDeafenMembers         Permission `json:"vc_deafen_members"`
+	VcMoveMembers           Permission `json:"vc_move_members"`
+	StageRequestToSpeak     Permission `json:"stage_request_to_speak"`
+	CreateEvents            Permission `json:"create_events"`
+	ManageEvents            Permission `json:"manage_events"`
+	Administrator           Permission `json:"administrator"`
 }
 
 // docs: https://discord.com/developers/docs/topics/permissions#implicit-permissions

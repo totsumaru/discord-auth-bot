@@ -4,19 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/permission"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
-	"log"
+	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"net/http"
+	"sort"
 )
 
 type Res struct {
-	Roles []Role
+	Roles []Role `json:"roles"`
 }
 
 type Role struct {
-	ID          string
-	Name        string
-	Color       string
-	ChannelView permission.Permission // テスト用
+	ID         string                 `json:"id"`
+	Name       string                 `json:"name"`
+	Permission permission.Permissions `json:"permission"`
 }
 
 func Server(e *gin.Engine) {
@@ -35,16 +35,25 @@ func server(c *gin.Context) {
 	s := discord.Session
 	roles, err := s.GuildRoles(serverID)
 	if err != nil {
-		log.Fatal(err)
+		errors.SendDiscord(err)
+		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+		return
 	}
 
+	// ロールをPosition順にソートします
+	sort.Slice(roles, func(i, j int) bool {
+		return roles[i].Position > roles[j].Position
+	})
+
+	res := Res{}
 	for _, role := range roles {
-		if role.ID == "998800967665459240" {
-			pm := permission.CheckPermission(role)
-			c.JSON(http.StatusOK, pm)
-			return
+		r := Role{
+			ID:         role.ID,
+			Name:       role.Name,
+			Permission: permission.CheckPermission(role),
 		}
+		res.Roles = append(res.Roles, r)
 	}
 
-	c.JSON(http.StatusOK, Role{})
+	c.JSON(http.StatusOK, res)
 }
