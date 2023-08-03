@@ -1,10 +1,10 @@
-package shared
+package api
 
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	errors "github.com/techstart35/discord-auth-bot/src/shared"
-	seeker "github.com/techstart35/discord-auth-bot/src/shared/map"
+	"github.com/techstart35/discord-auth-bot/src/shared/errors"
+	"github.com/techstart35/discord-auth-bot/src/shared/map/seeker"
 	"os"
 	"strings"
 )
