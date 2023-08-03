@@ -74,7 +74,9 @@ func Create(id model.ID) error {
 	client := &http.Client{}
 
 	data := Server{
-		ID: id.Value(),
+		ID:             id.Value(),
+		SubscriberID:   "",
+		OperatorRoleID: []string{},
 	}
 
 	jsonData, err := json.Marshal(data)

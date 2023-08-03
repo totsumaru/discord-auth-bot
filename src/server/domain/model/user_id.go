@@ -29,6 +29,10 @@ func (i UserID) Value() string {
 
 // 検証をします
 func (i UserID) validate() error {
+	if i.value == "" {
+		return nil
+	}
+
 	match, err := regexp.MatchString(`^[0-9]+$`, i.value)
 	if err != nil {
 		return errors.NewError("正規表現の検証に失敗しました", err)
