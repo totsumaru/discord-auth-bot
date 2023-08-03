@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/permission"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
-	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"net/http"
 	"sort"
 )
@@ -35,7 +34,6 @@ func server(c *gin.Context) {
 	s := discord.Session
 	roles, err := s.GuildRoles(serverID)
 	if err != nil {
-		errors.SendDiscord(err)
 		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 		return
 	}
