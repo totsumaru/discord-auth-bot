@@ -1,10 +1,14 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/login"
+)
 
 // ルートを設定します
 func RegisterRouter(e *gin.Engine) {
 	Route(e)
+	login.Login(e)
 }
 
 // ルートです
