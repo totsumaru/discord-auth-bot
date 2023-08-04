@@ -1,5 +1,7 @@
 package permission
 
+import "github.com/bwmarrin/discordgo"
+
 const (
 	PermissionSendVoiceMessages    = 0x0000400000000000
 	PermissionVcUseSoundboard      = 0x0000040000000000
@@ -14,6 +16,26 @@ const (
 	ChannelTypeVC       = "vc"
 	ChannelTypeStage    = "stage"
 )
+
+// Typeを変換します
+func ConvertChannelType(chType discordgo.ChannelType) string {
+	switch chType {
+	case discordgo.ChannelTypeGuildText:
+		return ChannelTypeText
+	case discordgo.ChannelTypeGuildCategory:
+		return ChannelTypeCategory
+	case discordgo.ChannelTypeGuildNews:
+		return ChannelTypeAnnounce
+	case discordgo.ChannelTypeGuildForum:
+		return ChannelTypeForum
+	case discordgo.ChannelTypeGuildVoice:
+		return ChannelTypeVC
+	case discordgo.ChannelTypeGuildStageVoice:
+		return ChannelTypeStage
+	default:
+		return ""
+	}
+}
 
 type ViewChannels bool
 type ManageChannels bool

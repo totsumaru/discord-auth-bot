@@ -11,6 +11,7 @@ import (
 	"sort"
 )
 
+// レスポンスです
 type Res struct {
 	ChannelID   string    `json:"channel_id"`
 	ChannelName string    `json:"channel_name"`
@@ -19,6 +20,7 @@ type Res struct {
 	Roles       []roleRes `json:"roles"`
 }
 
+// レスポンスのロールです
 type roleRes struct {
 	ID         string                `json:"id"`
 	Name       string                `json:"name"`
@@ -26,10 +28,12 @@ type roleRes struct {
 	Permission permission.Permission `json:"permission"` // チャンネルタイプごとに中身は変更
 }
 
+// チャンネルの権限を取得します
 func Channel(e *gin.Engine) {
 	e.GET("/api/channel", channel) // ?server_id=xxx&channel_id=xxx
 }
 
+// チャンネルの権限を取得します
 func channel(c *gin.Context) {
 	//authHeader := c.GetHeader(api.HeaderAuthorization)
 	//
