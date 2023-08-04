@@ -1,7 +1,6 @@
 package list
 
 import (
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/permission"
@@ -44,7 +43,7 @@ func ChannelList(e *gin.Engine) {
 		for _, ch := range channels {
 			resCh := resChannel{
 				ID:   ch.ID,
-				Name: fmt.Sprintf("%d: %s", ch.Position, ch.Name),
+				Name: ch.Name,
 				Type: permission.ConvertChannelType(ch.Type),
 			}
 
