@@ -12,14 +12,14 @@ import (
 )
 
 type Res struct {
-	ChannelID   string `json:"channel_id"`
-	ChannelName string `json:"channel_name"`
-	ChannelType string `json:"channel_type"`
-	IsPrivate   bool   `json:"is_private"`
-	Roles       []Role `json:"roles"`
+	ChannelID   string    `json:"channel_id"`
+	ChannelName string    `json:"channel_name"`
+	ChannelType string    `json:"channel_type"`
+	IsPrivate   bool      `json:"is_private"`
+	Roles       []roleRes `json:"roles"`
 }
 
-type Role struct {
+type roleRes struct {
 	ID         string                `json:"id"`
 	Name       string                `json:"name"`
 	Comment    string                `json:"comment"`    // 推奨設定のコメント(任意)
@@ -69,7 +69,7 @@ func channel(c *gin.Context) {
 	for _, role := range roles {
 		var isOverrideRole bool
 
-		resRole := Role{
+		resRole := roleRes{
 			ID:   role.ID,
 			Name: role.Name,
 		}

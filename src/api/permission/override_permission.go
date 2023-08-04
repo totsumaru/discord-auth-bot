@@ -82,7 +82,7 @@ func OverridePermission(
 		newRolePermission.UseExternalEmoji = UseExternalEmoji(isAllow)
 	}
 	if fixedPermission&discordgo.PermissionUseExternalStickers == discordgo.PermissionUseExternalStickers {
-		newRolePermission.UserExternalStickers = UserExternalStickers(isAllow)
+		newRolePermission.UseExternalStickers = UseExternalStickers(isAllow)
 	}
 	if fixedPermission&discordgo.PermissionMentionEveryone == discordgo.PermissionMentionEveryone {
 		newRolePermission.MentionEveryone = MentionEveryone(isAllow)

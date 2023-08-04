@@ -38,7 +38,7 @@ type EmbedLinks bool
 type AttachFiles bool
 type AddReactions bool
 type UseExternalEmoji bool
-type UserExternalStickers bool
+type UseExternalStickers bool
 type MentionEveryone bool
 type ManageMessages bool
 type ManageThreads bool
@@ -90,7 +90,7 @@ type RolePermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ManageThreads           `json:"manage_threads"`
@@ -131,7 +131,7 @@ type TextChannelPermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ManageThreads           `json:"manage_threads"`
@@ -157,7 +157,7 @@ type CategoryPermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ManageThreads           `json:"manage_threads"`
@@ -196,7 +196,7 @@ type AnnounceChannelPermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ManageThreads           `json:"manage_threads"`
@@ -221,7 +221,7 @@ type ForumPermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ManageThreads           `json:"manage_threads"`
@@ -244,7 +244,7 @@ type VCPermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ReadMessageHistory      `json:"read_message_history"`
@@ -261,6 +261,7 @@ type VCPermission struct {
 	VcMuteMembers           `json:"vc_mute_members"`
 	VcDeafenMembers         `json:"vc_deafen_members"`
 	VcMoveMembers           `json:"vc_move_members"`
+	ManageEvents            `json:"manage_events"`
 }
 
 func (p VCPermission) Permission() {}
@@ -275,7 +276,7 @@ type StagePermission struct {
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
 	UseExternalEmoji        `json:"use_external_emoji"`
-	UserExternalStickers    `json:"user_external_stickers"`
+	UseExternalStickers     `json:"use_external_stickers"`
 	MentionEveryone         `json:"mention_everyone"`
 	ManageMessages          `json:"manage_messages"`
 	ReadMessageHistory      `json:"read_message_history"`
@@ -286,7 +287,6 @@ type StagePermission struct {
 	VcMuteMembers           `json:"vc_mute_members"`
 	VcMoveMembers           `json:"vc_move_members"`
 	StageRequestToSpeak     `json:"stage_request_to_speak"`
-	CreateEvents            `json:"create_events"`
 	ManageEvents            `json:"manage_events"`
 }
 

@@ -28,7 +28,7 @@ func CheckPermission(permission int64) RolePermission {
 		AttachFiles:             permission&discordgo.PermissionAttachFiles != 0,
 		AddReactions:            permission&discordgo.PermissionAddReactions != 0,
 		UseExternalEmoji:        permission&discordgo.PermissionUseExternalEmojis != 0,
-		UserExternalStickers:    permission&discordgo.PermissionUseExternalStickers != 0,
+		UseExternalStickers:     permission&discordgo.PermissionUseExternalStickers != 0,
 		MentionEveryone:         permission&discordgo.PermissionMentionEveryone != 0,
 		ManageMessages:          permission&discordgo.PermissionManageMessages != 0,
 		ManageThreads:           permission&discordgo.PermissionManageThreads != 0,
