@@ -13,9 +13,9 @@ type Res struct {
 }
 
 type Role struct {
-	ID         string                 `json:"id"`
-	Name       string                 `json:"name"`
-	Permission permission.Permissions `json:"permission"`
+	ID         string                    `json:"id"`
+	Name       string                    `json:"name"`
+	Permission permission.RolePermission `json:"permission"`
 }
 
 func Server(e *gin.Engine) {
