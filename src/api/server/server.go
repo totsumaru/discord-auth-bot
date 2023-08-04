@@ -48,7 +48,7 @@ func server(c *gin.Context) {
 		r := Role{
 			ID:         role.ID,
 			Name:       role.Name,
-			Permission: permission.CheckPermission(role),
+			Permission: permission.CheckPermission(role.Permissions),
 		}
 		res.Roles = append(res.Roles, r)
 	}
