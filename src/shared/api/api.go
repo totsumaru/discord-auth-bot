@@ -13,9 +13,13 @@ const HeaderAuthorization = "Authorization"
 
 // TODO: 有効期限の確認を行う
 
+type Res struct {
+	DiscordID string
+}
+
 // Header(Bearer xxx)からdiscordIDを取得します
 // ヘッダーの取得例) authHeader := c.GetHeader(shared.HeaderAuthorization)
-func GetDiscordIDFromAuthHeader(authHeader string) (string, error) {
+func GetAuthHeader(authHeader string) (Res, error) {
 	jwtToken := strings.TrimPrefix(authHeader, "Bearer ")
 
 	// トークンを解析
@@ -26,14 +30,15 @@ func GetDiscordIDFromAuthHeader(authHeader string) (string, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return "", errors.NewError("認証できません")
+		return Res{}, errors.NewError("認証できません", err)
 	}
 
 	// トークンが有効なら、ユーザーはログインしていると判断できる
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		id := seeker.Str(claims, []string{"user_metadata", "provider_id"})
-		return id, nil
+		return Res{
+			DiscordID: seeker.Str(claims, []string{"user_metadata", "provider_id"}),
+		}, nil
 	} else {
-		return "", errors.NewError("トークンが無効です")
+		return Res{}, errors.NewError("トークンが無効です")
 	}
 }

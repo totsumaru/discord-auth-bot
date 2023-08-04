@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/channel"
 	channelList "github.com/techstart35/discord-auth-bot/src/api/channel/list"
+	"github.com/techstart35/discord-auth-bot/src/api/guild"
 	roleList "github.com/techstart35/discord-auth-bot/src/api/role/list"
 	"github.com/techstart35/discord-auth-bot/src/api/server"
 )
@@ -15,6 +16,7 @@ func RegisterRouter(e *gin.Engine) {
 	channel.Channel(e)
 	channelList.ChannelList(e)
 	roleList.RoleList(e)
+	guild.MyGuilds(e)
 }
 
 // ルートです
