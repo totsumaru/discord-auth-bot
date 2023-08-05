@@ -46,16 +46,21 @@ func MyGuilds(e *gin.Engine) {
 		const iconURLTmpl = "https://cdn.discordapp.com/icons/%s/%s.png"
 
 		// botが導入されているサーバーのみをレスポンスとして返します
+		// TODO: 自分が管理できるサーバーのみ返す
 		s := discord.Session
 		guilds := s.State.Guilds
 
 		for _, v := range allGuilds {
 			for _, guild := range guilds {
 				if v.ID == guild.ID {
+					iconUrl := ""
+					if v.IconHash != "" {
+						iconUrl = fmt.Sprintf(iconURLTmpl, v.ID, v.IconHash)
+					}
 					res.Servers = append(res.Servers, resServer{
 						ID:      v.ID,
 						Name:    v.Name,
-						IconURL: fmt.Sprintf(iconURLTmpl, v.ID, v.IconHash),
+						IconURL: iconUrl,
 					})
 				}
 			}
