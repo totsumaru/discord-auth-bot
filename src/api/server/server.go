@@ -15,6 +15,7 @@ type Res struct {
 type Role struct {
 	ID         string                    `json:"id"`
 	Name       string                    `json:"name"`
+	Color      int                       `json:"color"`
 	Permission permission.RolePermission `json:"permission"`
 }
 
@@ -48,6 +49,7 @@ func server(c *gin.Context) {
 		r := Role{
 			ID:         role.ID,
 			Name:       role.Name,
+			Color:      role.Color,
 			Permission: permission.CheckPermission(role.Permissions),
 		}
 		res.Roles = append(res.Roles, r)

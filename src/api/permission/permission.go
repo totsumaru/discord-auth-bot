@@ -73,7 +73,7 @@ type VcSpeak bool
 type VcVideo bool
 type VcUseActivities bool
 type VcUseSoundboard bool
-type VcUserExternalSounds bool
+type VcUseExternalSounds bool
 type VcUseVoiceActivity bool
 type VcPrioritySpeaker bool
 type VcMuteMembers bool
@@ -125,7 +125,7 @@ type RolePermission struct {
 	VcVideo                 `json:"vc_video"`
 	VcUseActivities         `json:"vc_use_activities"`
 	VcUseSoundboard         `json:"vc_use_soundboard"`
-	VcUserExternalSounds    `json:"vc_user_external_sounds"`
+	VcUseExternalSounds     `json:"vc_user_external_sounds"`
 	VcUseVoiceActivity      `json:"vc_use_voice_activity"`
 	VcPrioritySpeaker       `json:"vc_priority_speaker"`
 	VcMuteMembers           `json:"vc_mute_members"`
@@ -192,7 +192,7 @@ type CategoryPermission struct {
 	VcVideo                 `json:"vc_video"`
 	VcUseActivities         `json:"vc_use_activities"`
 	VcUseSoundboard         `json:"vc_use_soundboard"`
-	VcUserExternalSounds    `json:"vc_user_external_sounds"`
+	VcUseExternalSounds     `json:"vc_use_external_sounds"`
 	VcUseVoiceActivity      `json:"vc_use_voice_activity"`
 	VcPrioritySpeaker       `json:"vc_priority_speaker"`
 	VcMuteMembers           `json:"vc_mute_members"`
@@ -231,14 +231,13 @@ type AnnounceChannelPermission struct {
 func (p AnnounceChannelPermission) Permission() {}
 
 type ForumPermission struct {
-	ViewChannels          `json:"view_channels"`
-	ManageChannels        `json:"manage_channels"`
-	ManageRoles           `json:"manage_roles"`
-	ManageWebhooks        `json:"manage_webhooks"`
-	CreateInvite          `json:"create_invite"`
-	SendMessages          `json:"send_messages"`
-	SendMessagesInThreads `json:"send_messages_in_threads"`
-	//CreatePublicThreads     `json:"create_public_threads"`
+	ViewChannels            `json:"view_channels"`
+	ManageChannels          `json:"manage_channels"`
+	ManageRoles             `json:"manage_roles"`
+	ManageWebhooks          `json:"manage_webhooks"`
+	CreateInvite            `json:"create_invite"`
+	SendMessages            `json:"send_messages"`
+	SendMessagesInThreads   `json:"send_messages_in_threads"`
 	EmbedLinks              `json:"embed_links"`
 	AttachFiles             `json:"attach_files"`
 	AddReactions            `json:"add_reactions"`
@@ -277,7 +276,7 @@ type VCPermission struct {
 	VcVideo                 `json:"vc_video"`
 	VcUseActivities         `json:"vc_use_activities"`
 	VcUseSoundboard         `json:"vc_use_soundboard"`
-	VcUserExternalSounds    `json:"vc_user_external_sounds"`
+	VcUseExternalSounds     `json:"vc_user_external_sounds"`
 	VcUseVoiceActivity      `json:"vc_use_voice_activity"`
 	VcPrioritySpeaker       `json:"vc_priority_speaker"`
 	VcMuteMembers           `json:"vc_mute_members"`

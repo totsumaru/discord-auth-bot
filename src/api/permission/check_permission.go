@@ -41,7 +41,7 @@ func CheckPermission(permission int64) RolePermission {
 		VcVideo:                 permission&discordgo.PermissionVoiceStreamVideo != 0,
 		VcUseActivities:         permission&discordgo.PermissionUseActivities != 0,
 		VcUseSoundboard:         permission&PermissionVcUseSoundboard != 0,      // USE_SOUNDBOARD
-		VcUserExternalSounds:    permission&PermissionVcUserExternalSounds != 0, // USE_EXTERNAL_SOUNDS
+		VcUseExternalSounds:     permission&PermissionVcUserExternalSounds != 0, // USE_EXTERNAL_SOUNDS
 		VcUseVoiceActivity:      permission&discordgo.PermissionVoiceUseVAD != 0,
 		VcPrioritySpeaker:       permission&discordgo.PermissionVoicePrioritySpeaker != 0,
 		VcMuteMembers:           permission&discordgo.PermissionVoiceMuteMembers != 0,

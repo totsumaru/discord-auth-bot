@@ -6,24 +6,26 @@ import (
 	"github.com/techstart35/discord-auth-bot/src/api/permission"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
-	"log"
 	"net/http"
 	"sort"
 )
 
 // レスポンスです
 type Res struct {
-	ChannelID   string    `json:"channel_id"`
-	ChannelName string    `json:"channel_name"`
-	ChannelType string    `json:"channel_type"`
-	IsPrivate   bool      `json:"is_private"`
-	Roles       []roleRes `json:"roles"`
+	Channel struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+		Type string `json:"type"`
+	} `json:"channel"`
+	IsPrivate bool      `json:"is_private"`
+	Roles     []roleRes `json:"roles"`
 }
 
 // レスポンスのロールです
 type roleRes struct {
 	ID         string                `json:"id"`
 	Name       string                `json:"name"`
+	Color      int                   `json:"color"`
 	Comment    string                `json:"comment"`    // 推奨設定のコメント(任意)
 	Permission permission.Permission `json:"permission"` // チャンネルタイプごとに中身は変更
 }
@@ -45,6 +47,11 @@ func channel(c *gin.Context) {
 	serverID := c.Query("server_id")
 	channelID := c.Query("channel_id")
 
+	if serverID == "" || channelID == "" {
+		c.JSON(http.StatusBadRequest, "リクエストが不正です")
+		return
+	}
+
 	s := discord.Session
 	roles, err := s.GuildRoles(serverID)
 	if err != nil {
@@ -59,23 +66,25 @@ func channel(c *gin.Context) {
 
 	ch, err := s.Channel(channelID)
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+		return
 	}
 
 	isPrivate := isPrivateChannel(ch, serverID)
 
 	res := Res{}
-	res.ChannelID = channelID
-	res.ChannelName = ch.Name
-	res.ChannelType = switchChannelType(ch.Type)
+	res.Channel.ID = channelID
+	res.Channel.Name = ch.Name
+	res.Channel.Type = switchChannelType(ch.Type)
 	res.IsPrivate = isPrivate
 
 	for _, role := range roles {
 		var isOverrideRole bool
 
 		resRole := roleRes{
-			ID:   role.ID,
-			Name: role.Name,
+			ID:    role.ID,
+			Name:  role.Name,
+			Color: role.Color,
 		}
 
 		rolePm := permission.CheckPermission(role.Permissions)

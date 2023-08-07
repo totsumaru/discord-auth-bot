@@ -121,7 +121,7 @@ func OverridePermission(
 		newRolePermission.VcUseSoundboard = VcUseSoundboard(isAllow)
 	}
 	if fixedPermission&PermissionVcUserExternalSounds == PermissionVcUserExternalSounds {
-		newRolePermission.VcUserExternalSounds = VcUserExternalSounds(isAllow)
+		newRolePermission.VcUseExternalSounds = VcUseExternalSounds(isAllow)
 	}
 	if fixedPermission&discordgo.PermissionVoiceUseVAD == discordgo.PermissionVoiceUseVAD {
 		newRolePermission.VcUseVoiceActivity = VcUseVoiceActivity(isAllow)
