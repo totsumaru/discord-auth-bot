@@ -10,7 +10,9 @@ import (
 )
 
 type Res struct {
-	Channels []resChannel `json:"channels"`
+	ServerName    string       `json:"server_name"`
+	ServerIconURL string       `json:"server_icon_url"`
+	Channels      []resChannel `json:"channels"`
 }
 
 type resChannel struct {
@@ -27,6 +29,12 @@ func ChannelList(e *gin.Engine) {
 
 		s := discord.Session
 
+		guild, err := s.Guild(serverID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			return
+		}
+
 		channels, err := s.GuildChannels(serverID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
@@ -37,7 +45,9 @@ func ChannelList(e *gin.Engine) {
 		channels = getSortedGuildChannels(channels)
 
 		res := Res{
-			Channels: []resChannel{},
+			ServerName:    guild.Name,
+			ServerIconURL: guild.IconURL(""),
+			Channels:      []resChannel{},
 		}
 
 		for _, ch := range channels {

@@ -53,11 +53,13 @@ func channel(c *gin.Context) {
 	}
 
 	s := discord.Session
-	roles, err := s.GuildRoles(serverID)
+	guild, err := s.Guild(serverID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 		return
 	}
+
+	roles := guild.Roles
 
 	// ロールをPosition順にソートします
 	sort.Slice(roles, func(i, j int) bool {

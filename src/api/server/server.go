@@ -9,7 +9,9 @@ import (
 )
 
 type Res struct {
-	Roles []Role `json:"roles"`
+	ServerName    string `json:"server_name"`
+	ServerIconURL string `json:"server_icon_url"`
+	Roles         []Role `json:"roles"`
 }
 
 type Role struct {
@@ -33,18 +35,24 @@ func server(c *gin.Context) {
 	serverID := c.Query("server_id")
 
 	s := discord.Session
-	roles, err := s.GuildRoles(serverID)
+
+	guild, err := s.Guild(serverID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 		return
 	}
+
+	roles := guild.Roles
 
 	// ロールをPosition順にソートします
 	sort.Slice(roles, func(i, j int) bool {
 		return roles[i].Position > roles[j].Position
 	})
 
-	res := Res{}
+	res := Res{
+		ServerName:    guild.Name,
+		ServerIconURL: guild.IconURL(""),
+	}
 	for _, role := range roles {
 		r := Role{
 			ID:         role.ID,
