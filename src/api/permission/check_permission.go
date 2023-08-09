@@ -53,3 +53,8 @@ func CheckPermission(permission int64) RolePermission {
 		Administrator:           permission&discordgo.PermissionAdministrator != 0,
 	}
 }
+
+// 指定の権限を持っているかを確認します
+func HasPermission(userPermission, expectPermission int64) bool {
+	return userPermission&expectPermission != 0
+}
