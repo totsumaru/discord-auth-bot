@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/golang-jwt/jwt"
-	"github.com/techstart35/discord-auth-bot/src/api/permission"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"

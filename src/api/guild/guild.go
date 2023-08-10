@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/shared/api"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
@@ -12,14 +13,9 @@ import (
 	"strings"
 )
 
+// レスポンスです
 type Res struct {
-	Servers []resServer `json:"servers"`
-}
-
-type resServer struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	IconURL string `json:"icon_url"`
+	Servers []res.Server `json:"servers"`
 }
 
 // 自分が管理できるサーバーの一覧を取得します
@@ -33,8 +29,8 @@ func MyGuilds(e *gin.Engine) {
 			return
 		}
 
-		res := Res{
-			Servers: []resServer{},
+		r := Res{
+			Servers: []res.Server{},
 		}
 
 		allGuilds, err := getAllGuilds(discordToken)
@@ -57,7 +53,7 @@ func MyGuilds(e *gin.Engine) {
 					if v.IconHash != "" {
 						iconUrl = fmt.Sprintf(iconURLTmpl, v.ID, v.IconHash)
 					}
-					res.Servers = append(res.Servers, resServer{
+					r.Servers = append(r.Servers, res.Server{
 						ID:      v.ID,
 						Name:    v.Name,
 						IconURL: iconUrl,
@@ -66,7 +62,7 @@ func MyGuilds(e *gin.Engine) {
 			}
 		}
 
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, r)
 	})
 }
 
@@ -78,31 +74,31 @@ type getAllGuildsRes struct {
 
 // 自分が所属しているDiscordサーバーを全て取得します
 func getAllGuilds(discordToken string) ([]getAllGuildsRes, error) {
-	res := make([]getAllGuildsRes, 0)
+	r := make([]getAllGuildsRes, 0)
 
 	// tokenから参加しているDiscordの一覧を取得
 	const url = "https://discordapp.com/api/users/@me/guilds"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return res, errors.NewError("httpリクエストを作成できません", err)
+		return r, errors.NewError("httpリクエストを作成できません", err)
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", discordToken))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return res, errors.NewError("httpリクエストを実行できません", err)
+		return r, errors.NewError("httpリクエストを実行できません", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return res, errors.NewError("bodyを読み取れません", err)
+		return r, errors.NewError("bodyを読み取れません", err)
 	}
 
-	if err = json.Unmarshal(body, &res); err != nil {
-		return res, errors.NewError("jsonを構造体に変換できません", err)
+	if err = json.Unmarshal(body, &r); err != nil {
+		return r, errors.NewError("jsonを構造体に変換できません", err)
 	}
 
-	return res, nil
+	return r, nil
 }

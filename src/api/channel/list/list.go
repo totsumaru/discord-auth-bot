@@ -3,22 +3,17 @@ package list
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
-	"github.com/techstart35/discord-auth-bot/src/api/permission"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 	"sort"
 )
 
+// レスポンスです
 type Res struct {
-	ServerName    string       `json:"server_name"`
-	ServerIconURL string       `json:"server_icon_url"`
-	Channels      []resChannel `json:"channels"`
-}
-
-type resChannel struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Server   res.Server    `json:"server"`
+	Channels []res.Channel `json:"channels"`
 }
 
 // チャンネルの一覧を取得します
@@ -44,26 +39,29 @@ func ChannelList(e *gin.Engine) {
 		// ロールをPosition順にソートします
 		channels = getSortedGuildChannels(channels)
 
-		res := Res{
-			ServerName:    guild.Name,
-			ServerIconURL: guild.IconURL(""),
-			Channels:      []resChannel{},
+		r := Res{
+			Server: res.Server{
+				ID:      guild.ID,
+				Name:    guild.Name,
+				IconURL: guild.IconURL(""),
+			},
+			Channels: []res.Channel{},
 		}
 
 		for _, ch := range channels {
-			resCh := resChannel{
+			resCh := res.Channel{
 				ID:   ch.ID,
 				Name: ch.Name,
 				Type: permission.ConvertChannelType(ch.Type),
 			}
-
-			res.Channels = append(res.Channels, resCh)
+			r.Channels = append(r.Channels, resCh)
 		}
 
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, r)
 	})
 }
 
+// チャンネルをDiscordでの表示順にソートします
 func getSortedGuildChannels(channels []*discordgo.Channel) []*discordgo.Channel {
 	// Divide channels into categories and others
 	categories := make([]*discordgo.Channel, 0)

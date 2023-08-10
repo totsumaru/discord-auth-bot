@@ -2,18 +2,17 @@ package list
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 	"sort"
 )
 
+// レスポンスです
+//
+// Permissionは返しません。
 type Res struct {
-	Roles []resRole `json:"roles"`
-}
-
-type resRole struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Roles []res.Role `json:"roles"`
 }
 
 // TODO: 認証を追加
@@ -37,19 +36,20 @@ func RoleList(e *gin.Engine) {
 			return roles[i].Position > roles[j].Position
 		})
 
-		res := Res{
-			Roles: []resRole{},
+		r := Res{
+			Roles: []res.Role{},
 		}
 
 		for _, role := range roles {
-			rr := resRole{
-				ID:   role.ID,
-				Name: role.Name,
+			rr := res.Role{
+				ID:    role.ID,
+				Name:  role.Name,
+				Color: role.Color,
 			}
 
-			res.Roles = append(res.Roles, rr)
+			r.Roles = append(r.Roles, rr)
 		}
 
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusOK, r)
 	})
 }

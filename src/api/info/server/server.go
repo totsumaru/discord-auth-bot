@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"github.com/techstart35/discord-auth-bot/src/shared/api"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
@@ -9,14 +10,12 @@ import (
 )
 
 // サーバーの情報のレスポンスです
+//
+// ロールのPermissionは返しません。
 type Res struct {
-	ServerID   string `json:"server_id"`
-	Subscriber struct {
-		ID      string `json:"id"`
-		Name    string `json:"name"`
-		IconURL string `json:"icon_url"`
-	} `json:"subscriber"`
-	OperatorRoleID []string `json:"operator_role_id"`
+	Server       res.Server `json:"server"`
+	Subscriber   res.User   `json:"subscriber"`
+	OperatorRole []res.Role `json:"operator_role"`
 }
 
 // サーバーの情報を取得します
@@ -31,6 +30,7 @@ func InfoServer(e *gin.Engine) {
 			return
 		}
 
+		// ユーザーがサーバーの情報にアクセスできるか検証
 		ok, err := api.VerifyUser(serverID, headerRes.DiscordID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
@@ -47,11 +47,14 @@ func InfoServer(e *gin.Engine) {
 			return
 		}
 
-		res := Res{
-			ServerID:       serverID,
-			OperatorRoleID: apiRes.OperatorRoleID,
+		s := discord.Session
+		guild, err := s.Guild(serverID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			return
 		}
 
+		subs := res.User{}
 		if apiRes.SubscriberID != "" {
 			subscriber, err := discord.Session.User(apiRes.SubscriberID)
 			if err != nil {
@@ -59,11 +62,41 @@ func InfoServer(e *gin.Engine) {
 				return
 			}
 
-			res.Subscriber.ID = subscriber.ID
-			res.Subscriber.Name = subscriber.Username
-			res.Subscriber.IconURL = subscriber.AvatarURL("")
+			subs.ID = subscriber.ID
+			subs.Name = subscriber.Username
+			subs.IconURL = subscriber.AvatarURL("")
 		}
 
-		c.JSON(http.StatusOK, headerRes)
+		operator := make([]res.Role, 0)
+		roles, err := s.GuildRoles(guild.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			return
+		}
+
+		for _, operatorRoleID := range apiRes.OperatorRoleID {
+			for _, role := range roles {
+				if operatorRoleID == role.ID {
+					resRole := res.Role{
+						ID:    role.ID,
+						Name:  role.Name,
+						Color: role.Color,
+					}
+					operator = append(operator, resRole)
+				}
+			}
+		}
+
+		r := Res{
+			Server: res.Server{
+				ID:      serverID,
+				Name:    guild.Name,
+				IconURL: guild.IconURL(""),
+			},
+			Subscriber:   subs,
+			OperatorRole: []res.Role{},
+		}
+
+		c.JSON(http.StatusOK, r)
 	})
 }
