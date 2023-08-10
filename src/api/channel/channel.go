@@ -13,9 +13,9 @@ import (
 
 // レスポンスです
 type Res struct {
-	Channel   res.Channel `json:"channel"`
-	IsPrivate bool        `json:"is_private"`
-	Roles     []res.Role  `json:"roles"`
+	Channel   res.Channel              `json:"channel"`
+	IsPrivate bool                     `json:"is_private"`
+	Roles     []res.RoleWithPermission `json:"roles"`
 }
 
 // チャンネルの権限を取得します
@@ -71,10 +71,12 @@ func Channel(e *gin.Engine) {
 		for _, role := range roles {
 			var isOverrideRole bool
 
-			resRole := res.Role{
-				ID:    role.ID,
-				Name:  role.Name,
-				Color: role.Color,
+			resRole := res.RoleWithPermission{
+				Role: res.Role{
+					ID:    role.ID,
+					Name:  role.Name,
+					Color: role.Color,
+				},
 			}
 
 			rolePm := permission.CheckPermission(role.Permissions)

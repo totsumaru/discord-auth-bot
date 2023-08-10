@@ -94,7 +94,7 @@ func InfoServer(e *gin.Engine) {
 				IconURL: guild.IconURL(""),
 			},
 			Subscriber:   subs,
-			OperatorRole: []res.Role{},
+			OperatorRole: operator,
 		}
 
 		c.JSON(http.StatusOK, r)

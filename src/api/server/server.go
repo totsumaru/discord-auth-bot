@@ -11,8 +11,8 @@ import (
 
 // レスポンスです
 type Res struct {
-	Server res.Server `json:"server"`
-	Roles  []res.Role `json:"roles"`
+	Server res.Server               `json:"server"`
+	Roles  []res.RoleWithPermission `json:"roles"`
 }
 
 // そのサーバーのデフォルトの権限を取得します
@@ -48,14 +48,16 @@ func Server(e *gin.Engine) {
 				Name:    guild.Name,
 				IconURL: guild.IconURL(""),
 			},
-			Roles: []res.Role{},
+			Roles: []res.RoleWithPermission{},
 		}
 
 		for _, role := range roles {
-			rr := res.Role{
-				ID:         role.ID,
-				Name:       role.Name,
-				Color:      role.Color,
+			rr := res.RoleWithPermission{
+				Role: res.Role{
+					ID:    role.ID,
+					Name:  role.Name,
+					Color: role.Color,
+				},
 				Permission: permission.CheckPermission(role.Permissions),
 			}
 			r.Roles = append(r.Roles, rr)

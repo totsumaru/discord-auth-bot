@@ -15,13 +15,18 @@ type Server struct {
 	IconURL string `json:"icon_url"`
 }
 
+// Permissionを含むロールのレスポンスです
+type RoleWithPermission struct {
+	Role
+	Permission permission.Permission `json:"permission"`
+}
+
 // ロールのレスポンスです
 type Role struct {
-	ID         string                `json:"id"`
-	Name       string                `json:"name"`
-	Color      int                   `json:"color"`
-	Comment    string                `json:"comment"`
-	Permission permission.Permission `json:"permission"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Color   int    `json:"color"`
+	Comment string `json:"comment"`
 }
 
 // チャンネルのレスポンスです
