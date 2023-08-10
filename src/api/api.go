@@ -7,7 +7,6 @@ import (
 	"github.com/techstart35/discord-auth-bot/src/api/guild"
 	infoServer "github.com/techstart35/discord-auth-bot/src/api/info/server"
 	"github.com/techstart35/discord-auth-bot/src/api/info/user"
-	roleList "github.com/techstart35/discord-auth-bot/src/api/role/list"
 	"github.com/techstart35/discord-auth-bot/src/api/server"
 )
 
@@ -17,7 +16,6 @@ func RegisterRouter(e *gin.Engine) {
 	server.Server(e)
 	channel.Channel(e)
 	channelList.ChannelList(e)
-	roleList.RoleList(e)
 	guild.MyGuilds(e)
 	user.InfoUser(e)
 	infoServer.InfoServer(e)
