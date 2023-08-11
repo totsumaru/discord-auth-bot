@@ -13,6 +13,7 @@ import (
 
 // レスポンスです
 type Res struct {
+	Server    res.Server               `json:"server"`
 	Channel   res.Channel              `json:"channel"`
 	IsPrivate bool                     `json:"is_private"`
 	Roles     []res.RoleWithPermission `json:"roles"`
@@ -59,14 +60,7 @@ func Channel(e *gin.Engine) {
 
 		isPrivate := isPrivateChannel(ch, serverID)
 
-		r := Res{
-			Channel: res.Channel{
-				ID:   channelID,
-				Name: ch.Name,
-				Type: switchChannelType(ch.Type),
-			},
-			IsPrivate: isPrivate,
-		}
+		resRoles := make([]res.RoleWithPermission, 0)
 
 		for _, role := range roles {
 			var isOverrideRole bool
@@ -112,7 +106,22 @@ func Channel(e *gin.Engine) {
 				return
 			}
 
-			r.Roles = append(r.Roles, resRole)
+			resRoles = append(resRoles, resRole)
+		}
+
+		r := Res{
+			Server: res.Server{
+				ID:      guild.ID,
+				Name:    guild.Name,
+				IconURL: guild.IconURL(""),
+			},
+			Channel: res.Channel{
+				ID:   channelID,
+				Name: ch.Name,
+				Type: switchChannelType(ch.Type),
+			},
+			IsPrivate: isPrivate,
+			Roles:     resRoles,
 		}
 
 		c.JSON(http.StatusOK, r)
