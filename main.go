@@ -72,6 +72,7 @@ func main() {
 			AllowMethods: []string{
 				"GET",
 				"PATCH",
+				"POST",
 			},
 			// 許可したいHTTPリクエストヘッダ
 			AllowHeaders: []string{

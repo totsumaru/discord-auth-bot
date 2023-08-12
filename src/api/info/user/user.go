@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/shared/api"
@@ -21,7 +20,6 @@ func InfoUser(e *gin.Engine) {
 
 		headerRes, err := api.GetAuthHeader(authHeader)
 		if err != nil {
-			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 			return
 		}
