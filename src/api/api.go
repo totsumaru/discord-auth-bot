@@ -5,6 +5,7 @@ import (
 	"github.com/techstart35/discord-auth-bot/src/api/channel"
 	channelList "github.com/techstart35/discord-auth-bot/src/api/channel/list"
 	"github.com/techstart35/discord-auth-bot/src/api/checkout"
+	"github.com/techstart35/discord-auth-bot/src/api/checkout/portal"
 	"github.com/techstart35/discord-auth-bot/src/api/checkout/webhook"
 	"github.com/techstart35/discord-auth-bot/src/api/guild"
 	infoServer "github.com/techstart35/discord-auth-bot/src/api/info/server"
@@ -23,6 +24,7 @@ func RegisterRouter(e *gin.Engine) {
 	infoServer.InfoServer(e)
 	checkout.Checkout(e)
 	webhook.Webhook(e)
+	portal.CreateCustomerPortal(e)
 }
 
 // ルートです
