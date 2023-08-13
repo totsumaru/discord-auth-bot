@@ -17,6 +17,7 @@ type Res struct {
 	Roles        []res.RoleWithPermission `json:"roles"`
 	Subscriber   res.User                 `json:"subscriber"`
 	OperatorRole []res.Role               `json:"operator_role"`
+	Status       string                   `json:"status"`
 }
 
 // そのサーバーのデフォルトの権限を取得します
@@ -113,6 +114,7 @@ func Server(e *gin.Engine) {
 			Roles:        allRoles,
 			Subscriber:   subs,
 			OperatorRole: operator,
+			Status:       apiRes.Status,
 		}
 
 		c.JSON(http.StatusOK, r)
