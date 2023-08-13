@@ -1,6 +1,7 @@
 package portal
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/billingportal/session"
@@ -56,8 +57,12 @@ func CreateCustomerPortal(e *gin.Engine) {
 
 		// customerIdからカスタマーポータルURLを作成
 		params := &stripe.BillingPortalSessionParams{
-			Customer:  stripe.String(apiRes.CustomerID),
-			ReturnURL: stripe.String("https://google.com"),
+			Customer: stripe.String(apiRes.CustomerID),
+			ReturnURL: stripe.String(fmt.Sprintf(
+				"%s/dashboard/%s/config",
+				os.Getenv("FRONTEND_URL"),
+				serverID,
+			)),
 		}
 
 		s, err := session.New(params)

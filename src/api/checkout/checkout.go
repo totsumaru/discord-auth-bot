@@ -1,6 +1,7 @@
 package checkout
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
@@ -54,12 +55,15 @@ func Checkout(e *gin.Engine) {
 			return
 		}
 
-		successURL := "https://google.com"
+		FEURL := os.Getenv("FRONTEND_URL")
+
+		successURL := fmt.Sprintf("%s/dashboard/%s/success", FEURL, serverID)
+		cancelURL := fmt.Sprintf("%s/dashboard/%s/config", FEURL, serverID)
 
 		params := &stripe.CheckoutSessionParams{
-			SuccessURL: &successURL,
-			//CancelURL:  "https://example.com/canceled.html",
-			Mode: stripe.String(string(stripe.CheckoutSessionModeSubscription)),
+			SuccessURL: stripe.String(successURL),
+			CancelURL:  stripe.String(cancelURL),
+			Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 			LineItems: []*stripe.CheckoutSessionLineItemParams{
 				{
 					Price:    stripe.String(priceId),
