@@ -18,6 +18,8 @@ type Server struct {
 	ID             string   `json:"id"`
 	SubscriberID   string   `json:"subscriber_id"`
 	OperatorRoleID []string `json:"operator_role_id"`
+	CustomerID     string   `json:"customer_id"`
+	SubscriptionID string   `json:"subscription_id"`
 }
 
 // サーバー情報を取得します
@@ -78,6 +80,8 @@ func Create(id model.ID) error {
 		ID:             id.Value(),
 		SubscriberID:   "",
 		OperatorRoleID: []string{},
+		CustomerID:     "",
+		SubscriptionID: "",
 	}
 
 	jsonData, err := json.Marshal(data)
@@ -109,18 +113,20 @@ func Create(id model.ID) error {
 }
 
 // 更新します
-func Update(id model.ID, subsID model.UserID, operator []model.RoleID) error {
+func Update(s model.Server) error {
 	client := &http.Client{}
 
 	operatorRoles := make([]string, 0)
-	for _, v := range operator {
+	for _, v := range s.OperatorRoleID() {
 		operatorRoles = append(operatorRoles, v.Value())
 	}
 
 	data := Server{
-		ID:             id.Value(),
-		SubscriberID:   subsID.Value(),
+		ID:             s.ID().Value(),
+		SubscriberID:   s.SubscriberID().Value(),
 		OperatorRoleID: operatorRoles,
+		CustomerID:     s.Stripe().CustomerID().Value(),
+		SubscriptionID: s.Stripe().SubscriptionID().Value(),
 	}
 
 	jsonData, err := json.Marshal(data)

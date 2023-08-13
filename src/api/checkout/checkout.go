@@ -1,7 +1,6 @@
 package checkout
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
@@ -55,8 +54,6 @@ func Checkout(e *gin.Engine) {
 			return
 		}
 
-		serverAndUser := fmt.Sprintf("%s_%s", guild.ID, u.ID)
-
 		successURL := "https://google.com"
 
 		params := &stripe.CheckoutSessionParams{
@@ -69,8 +66,9 @@ func Checkout(e *gin.Engine) {
 					Quantity: stripe.Int64(1),
 				},
 			},
-			ClientReferenceID: &serverAndUser,
 		}
+		params.AddMetadata("guild_id", guild.ID)
+		params.AddMetadata("discord_id", u.ID)
 
 		s, err := session.New(params)
 		if err != nil {
