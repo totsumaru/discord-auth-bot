@@ -1,9 +1,12 @@
 package expose
 
 import (
+	stripeAPI "github.com/stripe/stripe-go/v74"
+	stripeAPISubs "github.com/stripe/stripe-go/v74/subscription"
 	"github.com/techstart35/discord-auth-bot/src/server/domain/model"
 	"github.com/techstart35/discord-auth-bot/src/server/domain/model/stripe"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
+	"os"
 )
 
 // レスポンスです
@@ -13,6 +16,28 @@ type Response struct {
 	OperatorRoleID []string
 	CustomerID     string
 	SubscriptionID string
+	Status         string
+}
+
+// ステータスを取得します
+//
+// 取得できない/freeプラン の場合は空の値を返します。
+func GetStatus(subscriptionID string) string {
+	if subscriptionID == "" {
+		return ""
+	}
+
+	// Stripe APIキーを設定
+	stripeAPI.Key = os.Getenv("STRIPE_SECRET_KEY")
+
+	// サブスクリプション情報を取得
+	sub, err := stripeAPISubs.Get(subscriptionID, nil)
+	if err != nil {
+		errors.SendDiscord(errors.NewError("サブスクリプション情報を取得できません", err))
+		return ""
+	}
+
+	return string(sub.Status)
 }
 
 // サーバーを復元します

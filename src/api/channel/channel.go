@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"net/http"
@@ -23,13 +24,6 @@ type Res struct {
 func Channel(e *gin.Engine) {
 	// ?server_id=xxx&channel_id=xxx
 	e.GET("/api/channel", func(c *gin.Context) {
-		//authHeader := c.GetHeader(api.HeaderAuthorization)
-		//
-		//discordID, err := api.GetDiscordIDFromAuthHeader(authHeader)
-		//if err != nil {
-		//	c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-		//	return
-		//}
 		serverID := c.Query("server_id")
 		channelID := c.Query("channel_id")
 
@@ -38,11 +32,55 @@ func Channel(e *gin.Engine) {
 			return
 		}
 
+		//authHeader := c.GetHeader(api.HeaderAuthorization)
+		//
+		//discordID, err := api.GetDiscordIDFromAuthHeader(authHeader)
+		//if err != nil {
+		//	c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+		//	return
+		//}
+
 		s := discord.Session
 		guild, err := s.Guild(serverID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 			return
+		}
+
+		ch, err := s.Channel(channelID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			return
+		}
+
+		// そのサーバーがProプラン&activeかどうかを判定します
+		{
+			r, err := expose.FindByID(serverID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+				return
+			}
+
+			if r.Status != "active" {
+				rr := Res{
+					Server: res.Server{
+						ID:      guild.ID,
+						Name:    guild.Name,
+						IconURL: guild.IconURL(""),
+					},
+					Channel: res.Channel{
+						ID:   channelID,
+						Name: ch.Name,
+						Type: switchChannelType(ch.Type),
+					},
+					IsPrivate: false,
+					Roles:     []res.RoleWithPermission{},
+				}
+
+				c.JSON(http.StatusOK, rr)
+				return
+			}
+			// activeでなかったら、ここで終了
 		}
 
 		roles := guild.Roles
@@ -51,12 +89,6 @@ func Channel(e *gin.Engine) {
 		sort.Slice(roles, func(i, j int) bool {
 			return roles[i].Position > roles[j].Position
 		})
-
-		ch, err := s.Channel(channelID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
 
 		isPrivate := isPrivateChannel(ch, serverID)
 

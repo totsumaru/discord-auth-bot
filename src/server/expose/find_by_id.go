@@ -25,6 +25,7 @@ func FindByID(id string) (Response, error) {
 	res.OperatorRoleID = s.OperatorRoleID
 	res.CustomerID = s.CustomerID
 	res.SubscriptionID = s.SubscriptionID
+	res.Status = GetStatus(s.SubscriptionID)
 
 	return res, nil
 }

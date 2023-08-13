@@ -16,6 +16,7 @@ func Webhook(e *gin.Engine) {
 		var b []byte
 		if err := c.BindJSON(&b); err != nil {
 			c.JSON(http.StatusBadRequest, "不正なリクエストです")
+			return
 		}
 
 		header := c.GetHeader("Stripe-Signature")
@@ -78,5 +79,7 @@ func Webhook(e *gin.Engine) {
 		default:
 
 		}
+
+		c.JSON(http.StatusOK, "")
 	})
 }
