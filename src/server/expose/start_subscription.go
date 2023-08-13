@@ -26,7 +26,7 @@ func StartSubscription(id, subscriberID, customerID, subscriptionID string) erro
 
 	// カスタマーID, subscriptionIDを登録
 	sv, err := restoreServer(
-		i, s.OperatorRoleID, s.SubscriberID, customerID, subscriptionID,
+		i, s.OperatorRoleID, subscriberID, customerID, subscriptionID,
 	)
 	if err != nil {
 		return errors.NewError("サーバー構造体を復元できません", err)
