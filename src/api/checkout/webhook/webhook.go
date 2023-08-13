@@ -1,9 +1,11 @@
 package webhook
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74/webhook"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
+	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"net/http"
 	"os"
 )
@@ -47,10 +49,32 @@ func Webhook(e *gin.Engine) {
 			// TODO: 実装
 			// 請求期間ごとに、支払いが成功すると送信されます。
 			// ステータスをDBに保存します。
+		case "customer.subscription.deleted":
+			// 顧客のサブスクリプションが終了すると送信されます。
+			metadata := event.Data.Object["metadata"].(map[string]string)
+			guildID := metadata["guild_id"]
+
+			if err = expose.DeleteSubscription(guildID); err != nil {
+				c.JSON(http.StatusInternalServerError, "サブスクリプションの開始情報を作成できません")
+				return
+			}
 		case "invoice.payment_failed":
-			// TODO: 実装
-			// 支払いが失敗しました。
-			// 顧客に通知して、支払い情報を確認してもらいます。
+			customerID := event.Data.Object["customer"].(string)
+			subscriptionID := event.Data.Object["id"].(string)
+			metadata := event.Data.Object["metadata"].(map[string]string)
+			guildID := metadata["guild_id"]
+			discordID := metadata["discord_id"]
+
+			resObj := map[string]string{
+				"customerID":     customerID,
+				"subscriptionID": subscriptionID,
+				"guildID":        guildID,
+				"discordID":      discordID,
+			}
+
+			errors.SendDiscord(fmt.Errorf(
+				"サブスクリプションの支払いに失敗したユーザーがいます。: %v", resObj,
+			))
 		default:
 
 		}
