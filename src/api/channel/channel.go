@@ -18,6 +18,7 @@ type Res struct {
 	Channel   res.Channel              `json:"channel"`
 	IsPrivate bool                     `json:"is_private"`
 	Roles     []res.RoleWithPermission `json:"roles"`
+	IsActive  bool                     `json:"is_active"`
 }
 
 // チャンネルの権限を取得します
@@ -61,6 +62,7 @@ func Channel(e *gin.Engine) {
 				return
 			}
 
+			// activeでなかったら、ここで終了
 			if r.Status != "active" {
 				rr := Res{
 					Server: res.Server{
@@ -75,12 +77,12 @@ func Channel(e *gin.Engine) {
 					},
 					IsPrivate: false,
 					Roles:     []res.RoleWithPermission{},
+					IsActive:  false,
 				}
 
 				c.JSON(http.StatusOK, rr)
 				return
 			}
-			// activeでなかったら、ここで終了
 		}
 
 		roles := guild.Roles
@@ -154,6 +156,7 @@ func Channel(e *gin.Engine) {
 			},
 			IsPrivate: isPrivate,
 			Roles:     resRoles,
+			IsActive:  true,
 		}
 
 		c.JSON(http.StatusOK, r)

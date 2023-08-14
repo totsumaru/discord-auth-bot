@@ -29,6 +29,10 @@ func (i SubscriptionID) Value() string {
 
 // 検証をします
 func (i SubscriptionID) validate() error {
+	if i.value == "" {
+		return nil
+	}
+
 	if !strings.HasPrefix(i.value, "sub_") {
 		return errors.NewError("指定した文字列から始まっていません")
 	}

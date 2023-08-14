@@ -29,6 +29,10 @@ func (i CustomerID) Value() string {
 
 // 検証をします
 func (i CustomerID) validate() error {
+	if i.value == "" {
+		return nil
+	}
+
 	if !strings.HasPrefix(i.value, "cus_") {
 		return errors.NewError("指定した文字列から始まっていません")
 	}

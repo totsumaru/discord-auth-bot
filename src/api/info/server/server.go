@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
@@ -46,7 +47,7 @@ func patch(c *gin.Context) {
 		return
 	}
 	if !ok {
-		c.JSON(http.StatusUnauthorized, "")
+		c.JSON(http.StatusUnauthorized, "サーバーの情報にアクセスできません")
 		return
 	}
 
@@ -57,7 +58,8 @@ func patch(c *gin.Context) {
 	}
 
 	if err = expose.UpdateOperatorRoleID(serverID, reqBody.RoleID); err != nil {
-		c.JSON(http.StatusUnauthorized, "")
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 		return
 	}
 
