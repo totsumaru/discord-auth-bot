@@ -57,6 +57,17 @@ func VerifyUser(serverID, userID string) (bool, error) {
 		return false, nil
 	}
 
+	guild, err := s.Guild(serverID)
+	if err != nil {
+		errors.SendDiscord(err)
+		return false, nil
+	}
+
+	// そのサーバーのオーナー出会った場合はtrueを返す
+	if guild.OwnerID == userID {
+		return true, nil
+	}
+
 	// サーバーにユーザーが存在している場合、操作ロールの有無を確認します
 	if member.User.ID == userID {
 		// APIからDBに登録されているサーバー設定を取得

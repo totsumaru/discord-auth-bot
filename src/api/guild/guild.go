@@ -13,6 +13,8 @@ import (
 	"strings"
 )
 
+const iconURLTmpl = "https://cdn.discordapp.com/icons/%s/%s.png"
+
 // レスポンスです
 type Res struct {
 	Servers []res.Server `json:"servers"`
@@ -33,31 +35,43 @@ func MyGuilds(e *gin.Engine) {
 			Servers: []res.Server{},
 		}
 
-		allGuilds, err := getAllGuilds(discordToken)
+		myGuilds, err := getAllGuilds(discordToken)
 		if err != nil {
 			c.JSON(http.StatusTooManyRequests, "You are being rate limited.")
 			return
 		}
 
-		const iconURLTmpl = "https://cdn.discordapp.com/icons/%s/%s.png"
+		me, err := getUser(discordToken)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "ユーザー情報を取得できません")
+			return
+		}
 
 		// botが導入されているサーバーのみをレスポンスとして返します
-		// TODO: 自分が管理できるサーバーのみ返す
 		s := discord.Session
-		guilds := s.State.Guilds
+		botGuilds := s.State.Guilds
 
-		for _, v := range allGuilds {
-			for _, guild := range guilds {
-				if v.ID == guild.ID {
-					iconUrl := ""
-					if v.IconHash != "" {
-						iconUrl = fmt.Sprintf(iconURLTmpl, v.ID, v.IconHash)
+		for _, myGuild := range myGuilds {
+			for _, botGuild := range botGuilds {
+				// 参加しているサーバーが一致した場合
+				if myGuild.ID == botGuild.ID {
+					// owner,adminロール保持,operatorロール保持の場合はOK
+					ok, err := api.VerifyUser(myGuild.ID, me.ID)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, "認証できません")
+						return
 					}
-					r.Servers = append(r.Servers, res.Server{
-						ID:      v.ID,
-						Name:    v.Name,
-						IconURL: iconUrl,
-					})
+					if ok {
+						iconUrl := ""
+						if myGuild.IconHash != "" {
+							iconUrl = fmt.Sprintf(iconURLTmpl, myGuild.ID, myGuild.IconHash)
+						}
+						r.Servers = append(r.Servers, res.Server{
+							ID:      myGuild.ID,
+							Name:    myGuild.Name,
+							IconURL: iconUrl,
+						})
+					}
 				}
 			}
 		}
@@ -66,10 +80,49 @@ func MyGuilds(e *gin.Engine) {
 	})
 }
 
+// ユーザー情報のレスポンスです
+// doc: https://discord.com/developers/docs/resources/user#user-object
+type getUserRes struct {
+	ID string `json:"id"`
+}
+
+// 自分のユーザー情報を取得します
+func getUser(discordToken string) (getUserRes, error) {
+	r := getUserRes{}
+
+	// tokenから参加しているDiscordの一覧を取得
+	const url = "https://discordapp.com/api/users/@me"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return r, errors.NewError("httpリクエストを作成できません", err)
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", discordToken))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return r, errors.NewError("httpリクエストを実行できません", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return r, errors.NewError("bodyを読み取れません", err)
+	}
+
+	if err = json.Unmarshal(body, &r); err != nil {
+		return r, errors.NewError("jsonを構造体に変換できません", err)
+	}
+
+	return r, nil
+}
+
+// 所属しているサーバーのレスポンスです
 type getAllGuildsRes struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	IconHash string `json:"icon"`
+	Owner    bool   `json:"owner"`
 }
 
 // 自分が所属しているDiscordサーバーを全て取得します
