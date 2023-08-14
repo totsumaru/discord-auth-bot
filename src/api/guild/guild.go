@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
-	"github.com/techstart35/discord-auth-bot/src/shared/api"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"io"
@@ -23,7 +23,7 @@ type Res struct {
 // 自分が管理できるサーバーの一覧を取得します
 func MyGuilds(e *gin.Engine) {
 	e.GET("/api/guild", func(c *gin.Context) {
-		header := c.GetHeader(api.HeaderAuthorization)
+		header := c.GetHeader(_utils.HeaderAuthorization)
 		discordToken := strings.TrimPrefix(header, "Bearer ")
 
 		if discordToken == "" {
@@ -56,7 +56,7 @@ func MyGuilds(e *gin.Engine) {
 				// 参加しているサーバーが一致した場合
 				if myGuild.ID == botGuild.ID {
 					// owner,adminロール保持,operatorロール保持の場合はOK
-					ok, err := api.VerifyUser(myGuild.ID, me.ID)
+					ok, err := _utils.VerifyUser(myGuild.ID, me.ID)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, "認証できません")
 						return

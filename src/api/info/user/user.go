@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
-	"github.com/techstart35/discord-auth-bot/src/shared/api"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 )
@@ -16,9 +16,9 @@ type Res struct {
 // ユーザーの情報を取得します
 func InfoUser(e *gin.Engine) {
 	e.GET("/api/info/user", func(c *gin.Context) {
-		authHeader := c.GetHeader(api.HeaderAuthorization)
+		authHeader := c.GetHeader(_utils.HeaderAuthorization)
 
-		headerRes, err := api.GetAuthHeader(authHeader)
+		headerRes, err := _utils.GetAuthHeader(authHeader)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 			return

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
-	"github.com/techstart35/discord-auth-bot/src/shared/api"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 	"os"
@@ -22,17 +22,17 @@ func Checkout(e *gin.Engine) {
 		stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 		priceId := os.Getenv("STRIPE_PRO_PRICE_ID")
 
-		authHeader := c.GetHeader(api.HeaderAuthorization)
+		authHeader := c.GetHeader(_utils.HeaderAuthorization)
 		serverID := c.Query("server_id")
 
-		headerRes, err := api.GetAuthHeader(authHeader)
+		headerRes, err := _utils.GetAuthHeader(authHeader)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 			return
 		}
 
 		// ユーザーがサーバーの情報にアクセスできるか検証
-		ok, err := api.VerifyUser(serverID, headerRes.DiscordID)
+		ok, err := _utils.VerifyUser(serverID, headerRes.DiscordID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
 			return
