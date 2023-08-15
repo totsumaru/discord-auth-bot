@@ -3,8 +3,10 @@ package list
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 	"sort"
@@ -21,18 +23,38 @@ func ChannelList(e *gin.Engine) {
 	// ?server_id=xxx
 	e.GET("/api/channel/list", func(c *gin.Context) {
 		serverID := c.Query("server_id")
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
+
+		// verify
+		{
+			if serverID == "" || authHeader == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
+
+			headerRes, err := verify.GetAuthHeader(authHeader)
+			if err != nil {
+				apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
+				return
+			}
+
+			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
+				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				return
+			}
+		}
 
 		s := discord.Session
 
 		guild, err := s.Guild(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "サーバー情報を取得できません", err)
 			return
 		}
 
 		channels, err := s.GuildChannels(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "チャンネル情報を取得できません", err)
 			return
 		}
 

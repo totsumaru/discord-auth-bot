@@ -2,8 +2,9 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/techstart35/discord-auth-bot/src/api/_utils"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 )
@@ -16,11 +17,11 @@ type Res struct {
 // ユーザーの情報を取得します
 func InfoUser(e *gin.Engine) {
 	e.GET("/api/info/user", func(c *gin.Context) {
-		authHeader := c.GetHeader(_utils.HeaderAuthorization)
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
 
-		headerRes, err := _utils.GetAuthHeader(authHeader)
+		headerRes, err := verify.GetAuthHeader(authHeader)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 401, "トークンの認証に失敗しました", nil)
 			return
 		}
 
@@ -28,7 +29,7 @@ func InfoUser(e *gin.Engine) {
 
 		u, err := s.User(headerRes.DiscordID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "ユーザー情報を取得できません", nil)
 			return
 		}
 

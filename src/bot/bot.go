@@ -12,7 +12,7 @@ func GuildCreateHandler(s *discordgo.Session, m *discordgo.GuildCreate) {
 
 	// サーバーの情報をDBに保存します
 	if err := expose.CreateServer(m.Guild.ID); err != nil {
-		errors.SendDiscord(err)
+		errors.SendDiscordLog(err)
 		return
 	}
 }

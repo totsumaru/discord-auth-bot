@@ -5,7 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/billingportal/session"
-	"github.com/techstart35/discord-auth-bot/src/api/_utils"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"net/http"
 	"os"
@@ -16,42 +17,44 @@ type Res struct {
 	RedirectURL string `json:"redirect_url"`
 }
 
+// カスタマーポータルのURLを作成します
 func CreateCustomerPortal(e *gin.Engine) {
 	// カスタマーポータルのURLを作成します
 	e.POST("/api/portal", func(c *gin.Context) {
 		stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
-		authHeader := c.GetHeader(_utils.HeaderAuthorization)
 		serverID := c.Query("server_id")
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
 
-		// discordIDをTokenから取得
-		headerRes, err := _utils.GetAuthHeader(authHeader)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
+		var userID string
 
-		// ユーザーがサーバーの情報にアクセスできるか検証
-		ok, err := _utils.VerifyUser(serverID, headerRes.DiscordID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
-		if !ok {
-			c.JSON(http.StatusUnauthorized, "")
-			return
-		}
+		// verify
+		{
+			if serverID == "" || authHeader == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
 
-		userID := headerRes.DiscordID
+			headerRes, err := verify.GetAuthHeader(authHeader)
+			if err != nil {
+				apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
+				return
+			}
+			userID = headerRes.DiscordID
+
+			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
+				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				return
+			}
+		}
 
 		// そのサーバーの支払い者が本人であるかを確認
 		apiRes, err := expose.FindByID(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "サーバーIDで情報を取得できません", err)
 			return
 		}
-
 		if apiRes.SubscriberID != userID {
-			c.JSON(http.StatusUnauthorized, "支払い者ではありません")
+			apiErr.HandleError(c, 401, "支払い者本人ではありません", err)
 			return
 		}
 
@@ -67,7 +70,7 @@ func CreateCustomerPortal(e *gin.Engine) {
 
 		s, err := session.New(params)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "stripeのsessionを作成できません", err)
 			return
 		}
 

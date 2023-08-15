@@ -2,9 +2,10 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/techstart35/discord-auth-bot/src/api/_utils"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
@@ -24,24 +25,26 @@ type Res struct {
 func Server(e *gin.Engine) {
 	// ?server_id=xxx
 	e.GET("/api/server", func(c *gin.Context) {
-		authHeader := c.GetHeader(_utils.HeaderAuthorization)
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
 		serverID := c.Query("server_id")
 
-		headerRes, err := _utils.GetAuthHeader(authHeader)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
+		// verify
+		{
+			if serverID == "" || authHeader == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
 
-		// ユーザーがサーバーの情報にアクセスできるか検証
-		ok, err := _utils.VerifyUser(serverID, headerRes.DiscordID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
-		if !ok {
-			c.JSON(http.StatusUnauthorized, "")
-			return
+			headerRes, err := verify.GetAuthHeader(authHeader)
+			if err != nil {
+				apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
+				return
+			}
+
+			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
+				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				return
+			}
 		}
 
 		apiRes, err := expose.FindByID(serverID)

@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/techstart35/discord-auth-bot/src/api/_utils"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"io"
@@ -23,12 +24,15 @@ type Res struct {
 // 自分が管理できるサーバーの一覧を取得します
 func MyGuilds(e *gin.Engine) {
 	e.GET("/api/guild", func(c *gin.Context) {
-		header := c.GetHeader(_utils.HeaderAuthorization)
+		header := c.GetHeader(verify.HeaderAuthorization)
 		discordToken := strings.TrimPrefix(header, "Bearer ")
 
-		if discordToken == "" {
-			c.JSON(http.StatusBadRequest, "トークンに値が設定されていません")
-			return
+		// verify
+		{
+			if discordToken == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
 		}
 
 		r := Res{
@@ -37,13 +41,13 @@ func MyGuilds(e *gin.Engine) {
 
 		myGuilds, err := getAllGuilds(discordToken)
 		if err != nil {
-			c.JSON(http.StatusTooManyRequests, "You are being rate limited.")
+			apiErr.HandleError(c, 500, "参加しているサーバー情報を取得できません", err)
 			return
 		}
 
 		me, err := getUser(discordToken)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "ユーザー情報を取得できません")
+			apiErr.HandleError(c, 500, "ユーザー情報を取得できません", err)
 			return
 		}
 
@@ -56,12 +60,8 @@ func MyGuilds(e *gin.Engine) {
 				// 参加しているサーバーが一致した場合
 				if myGuild.ID == botGuild.ID {
 					// owner,adminロール保持,operatorロール保持の場合はOK
-					ok, err := _utils.VerifyUser(myGuild.ID, me.ID)
-					if err != nil {
-						c.JSON(http.StatusInternalServerError, "認証できません")
-						return
-					}
-					if ok {
+					err = verify.CanOperate(myGuild.ID, me.ID)
+					if err == nil {
 						iconUrl := ""
 						if myGuild.IconHash != "" {
 							iconUrl = fmt.Sprintf(iconURLTmpl, myGuild.ID, myGuild.IconHash)
@@ -81,12 +81,12 @@ func MyGuilds(e *gin.Engine) {
 }
 
 // ユーザー情報のレスポンスです
-// doc: https://discord.com/developers/docs/resources/user#user-object
 type getUserRes struct {
 	ID string `json:"id"`
 }
 
 // 自分のユーザー情報を取得します
+// doc: https://discord.com/developers/docs/resources/user#user-object
 func getUser(discordToken string) (getUserRes, error) {
 	r := getUserRes{}
 

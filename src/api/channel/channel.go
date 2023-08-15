@@ -3,11 +3,12 @@ package channel
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/permission"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/server/expose"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
-	"github.com/techstart35/discord-auth-bot/src/shared/errors"
 	"net/http"
 	"sort"
 )
@@ -22,35 +23,44 @@ type Res struct {
 }
 
 // チャンネルの権限を取得します
+//
+// - そのサーバーの操作権限が必要です
 func Channel(e *gin.Engine) {
 	// ?server_id=xxx&channel_id=xxx
 	e.GET("/api/channel", func(c *gin.Context) {
 		serverID := c.Query("server_id")
 		channelID := c.Query("channel_id")
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
 
-		if serverID == "" || channelID == "" {
-			c.JSON(http.StatusBadRequest, "リクエストが不正です")
-			return
+		// verify
+		{
+			if serverID == "" || channelID == "" || authHeader == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
+
+			headerRes, err := verify.GetAuthHeader(authHeader)
+			if err != nil {
+				apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
+				return
+			}
+
+			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
+				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				return
+			}
 		}
-
-		//authHeader := c.GetHeader(api.HeaderAuthorization)
-		//
-		//discordID, err := api.GetDiscordIDFromAuthHeader(authHeader)
-		//if err != nil {
-		//	c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-		//	return
-		//}
 
 		s := discord.Session
 		guild, err := s.Guild(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "サーバー情報を取得できません", err)
 			return
 		}
 
 		ch, err := s.Channel(channelID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "チャンネル情報を取得できません", err)
 			return
 		}
 
@@ -58,7 +68,7 @@ func Channel(e *gin.Engine) {
 		{
 			r, err := expose.FindByID(serverID)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+				apiErr.HandleError(c, 500, "サーバー情報を取得できません", err)
 				return
 			}
 
@@ -135,8 +145,7 @@ func Channel(e *gin.Engine) {
 			// RolePermission -> チャンネルTypeに応じた型 に型キャスト
 			resRole.Permission, err = permission.CastRolePermissionToPermission(rolePm, ch.Type)
 			if err != nil {
-				errors.SendDiscord(errors.NewError("Permissionの型を変換できません", err))
-				c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+				apiErr.HandleError(c, 500, "Permissionを変換できません", err)
 				return
 			}
 

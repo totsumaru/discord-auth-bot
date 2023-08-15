@@ -5,7 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
-	"github.com/techstart35/discord-auth-bot/src/api/_utils"
+	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
+	"github.com/techstart35/discord-auth-bot/src/api/_utils/verify"
 	"github.com/techstart35/discord-auth-bot/src/shared/discord"
 	"net/http"
 	"os"
@@ -22,36 +23,41 @@ func Checkout(e *gin.Engine) {
 		stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 		priceId := os.Getenv("STRIPE_PRO_PRICE_ID")
 
-		authHeader := c.GetHeader(_utils.HeaderAuthorization)
+		authHeader := c.GetHeader(verify.HeaderAuthorization)
 		serverID := c.Query("server_id")
 
-		headerRes, err := _utils.GetAuthHeader(authHeader)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
+		var userID string
 
-		// ユーザーがサーバーの情報にアクセスできるか検証
-		ok, err := _utils.VerifyUser(serverID, headerRes.DiscordID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
-			return
-		}
-		if !ok {
-			c.JSON(http.StatusUnauthorized, "")
-			return
+		// verify
+		{
+			if serverID == "" || authHeader == "" {
+				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				return
+			}
+
+			headerRes, err := verify.GetAuthHeader(authHeader)
+			if err != nil {
+				apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
+				return
+			}
+			userID = headerRes.DiscordID
+
+			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
+				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				return
+			}
 		}
 
 		ds := discord.Session
 		guild, err := ds.Guild(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "サーバー情報を取得できません", err)
 			return
 		}
 
-		u, err := ds.User(headerRes.DiscordID)
+		u, err := ds.User(userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "ユーザー情報を取得できません", err)
 			return
 		}
 
@@ -76,7 +82,7 @@ func Checkout(e *gin.Engine) {
 
 		s, err := session.New(params)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			apiErr.HandleError(c, 500, "stripeのセッションを作成できません", err)
 			return
 		}
 
