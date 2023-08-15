@@ -19,7 +19,7 @@ func CanOperate(serverID, userID string) error {
 
 	member, err := s.GuildMember(serverID, userID)
 	if err != nil {
-		return errors.NewError("メンバーを取得できません", err)
+		return errors.NewError("指定したサーバーでユーザーを取得できません", err)
 	}
 
 	guild, err := s.Guild(serverID)

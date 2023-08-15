@@ -1,36 +1,64 @@
 package errors
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"github.com/bwmarrin/discordgo"
+	"github.com/gin-gonic/gin"
+	"github.com/techstart35/discord-auth-bot/src/shared/discord"
+	"log"
 )
 
-const webhookURL = "https://discord.com/api/webhooks/1136568735692497000/Wfav5O3GvlRTuLdXBlZ_I0LFZGKnx-0K3CFt7OM-HLUVjtZTa0PfFTzDkaED4n_xnHsK"
+const (
+	ErrorLogChannelID = "1136568705871007875"
+	TotsumaruID       = "960104306151948328"
+)
 
-type Webhook struct {
-	Content string `json:"content"`
+// DiscordにLogを送信します
+func SendDiscordLogWithContext(c *gin.Context, err error) {
+	s := discord.Session
+
+	embed := &discordgo.MessageEmbed{
+		Title:       c.Request.URL.String(),
+		Description: err.Error(),
+	}
+
+	_, err = s.ChannelMessageSendEmbed(ErrorLogChannelID, embed)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// Discordにメンション付きのアラートLogを送信します
+func SendDiscordAlertWithContext(c *gin.Context, err error) {
+	s := discord.Session
+
+	embed := &discordgo.MessageEmbed{
+		Title:       c.Request.URL.String(),
+		Description: err.Error(),
+	}
+
+	data := &discordgo.MessageSend{
+		Content: fmt.Sprintf("<@%s>", TotsumaruID),
+		Embed:   embed,
+	}
+
+	_, err = s.ChannelMessageSendComplex(ErrorLogChannelID, data)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // DiscordにLogを送信します
 func SendDiscordLog(err error) {
-	msg := Webhook{
-		Content: err.Error(),
+	s := discord.Session
+
+	embed := &discordgo.MessageEmbed{
+		Title:       "API以外でエラーが発生しました",
+		Description: err.Error(),
 	}
 
-	jsonData, _ := json.Marshal(msg)
-
-	_, _ = http.Post(webhookURL, "application/json", bytes.NewBuffer(jsonData))
-}
-
-// Discordにメンション付きのアラートLogを送信します
-func SendDiscordAlert(err error) {
-	msg := Webhook{
-		Content: fmt.Sprintf("<@960104306151948328> %s", err.Error()),
+	_, err = s.ChannelMessageSendEmbed(ErrorLogChannelID, embed)
+	if err != nil {
+		log.Println(err)
 	}
-
-	jsonData, _ := json.Marshal(msg)
-
-	_, _ = http.Post(webhookURL, "application/json", bytes.NewBuffer(jsonData))
 }

@@ -33,7 +33,6 @@ func GetStatus(subscriptionID string) string {
 	// サブスクリプション情報を取得
 	sub, err := stripeAPISubs.Get(subscriptionID, nil)
 	if err != nil {
-		errors.SendDiscordLog(errors.NewError("サブスクリプション情報を取得できません", err))
 		return ""
 	}
 

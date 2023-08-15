@@ -42,7 +42,7 @@ func Server(e *gin.Engine) {
 			}
 
 			if err = verify.CanOperate(serverID, headerRes.DiscordID); err != nil {
-				apiErr.HandleError(c, 401, "必要な権限を持っていません", err)
+				apiErr.HandleError(c, 401, "操作に必要な権限を持っていません", err)
 				return
 			}
 		}

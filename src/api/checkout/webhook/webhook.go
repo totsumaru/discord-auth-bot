@@ -76,7 +76,7 @@ func Webhook(e *gin.Engine) {
 				"discordID":      discordID,
 			}
 
-			errors.SendDiscordAlert(fmt.Errorf(
+			errors.SendDiscordAlertWithContext(c, fmt.Errorf(
 				"サブスクリプションの支払いに失敗したユーザーがいます。: %v",
 				resObj,
 			))
