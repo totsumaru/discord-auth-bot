@@ -25,7 +25,8 @@ type Res struct {
 func MyGuilds(e *gin.Engine) {
 	e.GET("/api/guild", func(c *gin.Context) {
 		header := c.GetHeader(verify.HeaderAuthorization)
-		discordToken := strings.TrimPrefix(header, "Bearer ")
+		discordToken := strings.Replace(header, "Bearer", "", 1)
+		discordToken = strings.Replace(discordToken, " ", "", 1)
 
 		// verify
 		{
