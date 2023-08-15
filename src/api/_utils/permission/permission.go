@@ -6,6 +6,8 @@ const (
 	PermissionSendVoiceMessages    = 0x0000400000000000
 	PermissionVcUseSoundboard      = 0x0000040000000000
 	PermissionVcUserExternalSounds = 0x0000200000000000
+	PermissionCreateExpressions    = 0x80000000000
+	PermissionCreateEvents         = 0x100000000000
 )
 
 const (
@@ -125,7 +127,7 @@ type RolePermission struct {
 	VcVideo                 `json:"vc_video"`
 	VcUseActivities         `json:"vc_use_activities"`
 	VcUseSoundboard         `json:"vc_use_soundboard"`
-	VcUseExternalSounds     `json:"vc_user_external_sounds"`
+	VcUseExternalSounds     `json:"vc_use_external_sounds"`
 	VcUseVoiceActivity      `json:"vc_use_voice_activity"`
 	VcPrioritySpeaker       `json:"vc_priority_speaker"`
 	VcMuteMembers           `json:"vc_mute_members"`
@@ -276,7 +278,7 @@ type VCPermission struct {
 	VcVideo                 `json:"vc_video"`
 	VcUseActivities         `json:"vc_use_activities"`
 	VcUseSoundboard         `json:"vc_use_soundboard"`
-	VcUseExternalSounds     `json:"vc_user_external_sounds"`
+	VcUseExternalSounds     `json:"vc_use_external_sounds"`
 	VcUseVoiceActivity      `json:"vc_use_voice_activity"`
 	VcPrioritySpeaker       `json:"vc_priority_speaker"`
 	VcMuteMembers           `json:"vc_mute_members"`

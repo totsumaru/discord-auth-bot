@@ -8,7 +8,7 @@ func CheckPermission(permission int64) RolePermission {
 		ViewChannels:            permission&discordgo.PermissionViewChannel != 0,
 		ManageChannels:          permission&discordgo.PermissionManageChannels != 0,
 		ManageRoles:             permission&discordgo.PermissionManageRoles != 0,
-		CreateExpressions:       false,
+		CreateExpressions:       permission&PermissionCreateExpressions != 0,
 		ManageExpressions:       permission&discordgo.PermissionManageEmojis != 0,
 		ViewAuditLog:            permission&discordgo.PermissionViewAuditLogs != 0,
 		ViewServerInsights:      permission&discordgo.PermissionViewGuildInsights != 0,
@@ -48,7 +48,7 @@ func CheckPermission(permission int64) RolePermission {
 		VcDeafenMembers:         permission&discordgo.PermissionVoiceDeafenMembers != 0,
 		VcMoveMembers:           permission&discordgo.PermissionVoiceMoveMembers != 0,
 		StageRequestToSpeak:     permission&discordgo.PermissionVoiceRequestToSpeak != 0,
-		CreateEvents:            false,
+		CreateEvents:            permission&PermissionCreateEvents != 0,
 		ManageEvents:            permission&discordgo.PermissionManageEvents != 0,
 		Administrator:           permission&discordgo.PermissionAdministrator != 0,
 	}
