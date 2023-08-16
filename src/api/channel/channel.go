@@ -128,6 +128,8 @@ func Channel(e *gin.Engine) {
 				}
 			}
 
+			// プライベートチャンネルでViewがOFFになっているロールは上書きしている意味がないため、
+			// コメントで不要メッセージを追加します。
 			if isPrivate &&
 				isOverrideRole &&
 				rolePm.ViewChannels == false &&
@@ -137,8 +139,9 @@ func Channel(e *gin.Engine) {
 				resRole.Comment = "@everyoneの「チャンネルを見る」をOFFにしたことでプライベートチャンネルになっているため、このロールは設定する必要ありません。"
 			}
 
-			if isPrivate && !isOverrideRole {
-				// privateチャンネルかつ、上書きされていないロールは、レスポンスに含めません
+			// privateチャンネルかつ、上書きされていないロールは、レスポンスに含めません
+			// ただし、管理者ロールはレスポンスに含めます。
+			if isPrivate && !isOverrideRole && !permission.HasPermission(role.Permissions, discordgo.PermissionAdministrator) {
 				continue
 			}
 
@@ -194,9 +197,10 @@ func switchChannelType(before discordgo.ChannelType) string {
 
 // チャンネルがプライベートか判定します
 func isPrivateChannel(ch *discordgo.Channel, serverID string) bool {
-	for _, overRole := range ch.PermissionOverwrites {
-		if overRole.ID == serverID {
-			return overRole.Deny&discordgo.PermissionViewChannel != 0
+	for _, overwritePermissionRole := range ch.PermissionOverwrites {
+		// @everyoneのView権限がOFFになっていたらPrivateのため、trueを返す
+		if overwritePermissionRole.ID == serverID {
+			return overwritePermissionRole.Deny&discordgo.PermissionViewChannel != 0
 		}
 	}
 

@@ -142,6 +142,7 @@ type RolePermission struct {
 func (p RolePermission) Permission() {}
 
 type TextChannelPermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
@@ -168,6 +169,7 @@ type TextChannelPermission struct {
 func (p TextChannelPermission) Permission() {}
 
 type CategoryPermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
@@ -208,6 +210,7 @@ type CategoryPermission struct {
 func (p CategoryPermission) Permission() {}
 
 type AnnounceChannelPermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
@@ -233,6 +236,7 @@ type AnnounceChannelPermission struct {
 func (p AnnounceChannelPermission) Permission() {}
 
 type ForumPermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
@@ -257,6 +261,7 @@ type ForumPermission struct {
 func (p ForumPermission) Permission() {}
 
 type VCPermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
@@ -290,6 +295,7 @@ type VCPermission struct {
 func (p VCPermission) Permission() {}
 
 type StagePermission struct {
+	Administrator           `json:"administrator"`
 	ViewChannels            `json:"view_channels"`
 	ManageChannels          `json:"manage_channels"`
 	ManageRoles             `json:"manage_roles"`
