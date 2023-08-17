@@ -26,7 +26,7 @@ func GetAuthHeader(authHeader string) (Res, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("メソッドが期待した値と異なります: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
+		return []byte(os.Getenv("SUPABASE_JWT_SECRET")), nil
 	})
 	if err != nil {
 		return Res{}, errors.NewError("認証できません", err)
