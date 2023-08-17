@@ -38,6 +38,10 @@ https://scan-discord.app
     - Client ID -> discordのbot(app)の情報を登録
     - Client Secret -> discordのbot(app)の情報を登録
 
+### Stripe
+
+決済サービスはStripeを使用します。
+
 ### BackEnd
 
 [render](https://render.com/)を使用します。
