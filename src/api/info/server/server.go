@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
 	"github.com/techstart35/discord-auth-bot/src/api/_utils/res"
@@ -38,7 +39,9 @@ func patch(c *gin.Context) {
 	// verify
 	{
 		if serverID == "" || authHeader == "" {
-			apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+			apiErr.HandleError(c, 400, "リクエストが不正です", fmt.Errorf(
+				"serverID: %s, authHeader: %s", serverID, authHeader,
+			))
 			return
 		}
 

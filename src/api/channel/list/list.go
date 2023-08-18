@@ -1,6 +1,7 @@
 package list
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 	apiErr "github.com/techstart35/discord-auth-bot/src/api/_utils/error"
@@ -28,7 +29,9 @@ func ChannelList(e *gin.Engine) {
 		// verify
 		{
 			if serverID == "" || authHeader == "" {
-				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				apiErr.HandleError(c, 400, "リクエストが不正です", fmt.Errorf(
+					"serverID: %s, authHeader: %s", serverID, authHeader,
+				))
 				return
 			}
 

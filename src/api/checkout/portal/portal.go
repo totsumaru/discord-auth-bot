@@ -30,7 +30,9 @@ func CreateCustomerPortal(e *gin.Engine) {
 		// verify
 		{
 			if serverID == "" || authHeader == "" {
-				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				apiErr.HandleError(c, 400, "リクエストが不正です", fmt.Errorf(
+					"serverID: %s, authHeader: %s", serverID, authHeader,
+				))
 				return
 			}
 
