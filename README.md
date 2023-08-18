@@ -21,7 +21,7 @@ https://scan-discord.app
 
 導入URLは権限の変更があるため、プログラム内部を参照してください。
 
-検証用bot(dev)のURLはこちら
+検証用bot(dev)のURLはこちら  
 https://discord.com/api/oauth2/authorize?client_id=1141576293524189306&permissions=268438528&scope=bot
 
 - 設定項目
