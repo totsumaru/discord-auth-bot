@@ -54,7 +54,7 @@ func Server(e *gin.Engine) {
 
 		apiRes, err := expose.FindByID(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "IDでサーバーの情報を取得できません", err)
 			return
 		}
 
@@ -62,7 +62,7 @@ func Server(e *gin.Engine) {
 
 		guild, err := s.Guild(serverID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+			apiErr.HandleError(c, 500, "IDでギルドの情報を取得できません", err)
 			return
 		}
 
@@ -77,7 +77,7 @@ func Server(e *gin.Engine) {
 		if apiRes.SubscriberID != "" {
 			subscriber, err := discord.Session.User(apiRes.SubscriberID)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, "エラーが発生しました")
+				apiErr.HandleError(c, 500, "サブスクライバーの情報を取得できません", err)
 				return
 			}
 
