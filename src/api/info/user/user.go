@@ -21,7 +21,7 @@ func InfoUser(e *gin.Engine) {
 
 		headerRes, err := verify.GetAuthHeader(authHeader)
 		if err != nil {
-			apiErr.HandleError(c, 401, "トークンの認証に失敗しました", nil)
+			apiErr.HandleError(c, 401, "トークンの認証に失敗しました", err)
 			return
 		}
 
@@ -29,7 +29,7 @@ func InfoUser(e *gin.Engine) {
 
 		u, err := s.User(headerRes.DiscordID)
 		if err != nil {
-			apiErr.HandleError(c, 500, "ユーザー情報を取得できません", nil)
+			apiErr.HandleError(c, 500, "ユーザー情報を取得できません", err)
 			return
 		}
 
