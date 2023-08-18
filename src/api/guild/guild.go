@@ -31,7 +31,7 @@ func MyGuilds(e *gin.Engine) {
 		// verify
 		{
 			if discordToken == "" {
-				apiErr.HandleError(c, 400, "リクエストが不正です", nil)
+				apiErr.HandleError(c, 400, "リクエストが不正です", fmt.Errorf("discordTokenが空です"))
 				return
 			}
 		}
