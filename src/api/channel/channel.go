@@ -128,15 +128,16 @@ func Channel(e *gin.Engine) {
 				}
 			}
 
-			// プライベートチャンネルでViewがOFFになっているロールは上書きしている意味がないため、
+			// プライベートチャンネルでViewがOFFになっているロール(管理者を除く)は上書きしている意味がないため、
 			// コメントで不要メッセージを追加します。
 			if isPrivate &&
 				isOverrideRole &&
 				rolePm.ViewChannels == false &&
+				rolePm.Administrator == false &&
 				role.ID != serverID {
 
 				// privateでチャンネルを見るがOFFになっているロールは無駄です
-				resRole.Comment = "@everyoneの「チャンネルを見る」をOFFにしたことでプライベートチャンネルになっているため、このロールは設定する必要ありません。"
+				resRole.Comment = "このロールは設定する必要ありません。@everyoneの「チャンネルを見る」をOFFにしたことで既にプライベートチャンネルになっていますが、二重で「チャンネルを見る」をOFFにしています。"
 			}
 
 			// privateチャンネルかつ、上書きされていないロールは、レスポンスに含めません
