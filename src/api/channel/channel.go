@@ -64,10 +64,20 @@ func Channel(e *gin.Engine) {
 			return
 		}
 
-		ch, err := s.Channel(channelID)
+		var ch *discordgo.Channel
+
+		// s.Channel()メソッドは、botがそのチャンネルを閲覧できる必要があるので、
+		// これを使うためにはbotにAdmin権限が必要となります。
+		// これは怖いため、非効率ですが全てのチャンネルを取得して、その中から1つを選び出します。
+		channels, err := s.GuildChannels(serverID)
 		if err != nil {
-			apiErr.HandleError(c, 500, "チャンネル情報を取得できません", err)
+			apiErr.HandleError(c, 500, "全てのチャンネルを取得できません", err)
 			return
+		}
+		for _, channel := range channels {
+			if channel.ID == channelID {
+				ch = channel
+			}
 		}
 
 		// そのサーバーがProプラン&activeかどうかを判定します
