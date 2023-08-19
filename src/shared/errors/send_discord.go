@@ -24,7 +24,7 @@ func SendDiscordLogWithContext(c *gin.Context, err error) {
 
 	_, err = s.ChannelMessageSendEmbed(ErrorLogChannelID, embed)
 	if err != nil {
-		log.Println(err)
+		log.Println("Discordにエラーを送信できません", err)
 	}
 }
 
